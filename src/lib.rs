@@ -1,7 +1,6 @@
 mod err;
 use self::err::{Error, LibResult};
 
-
 use std::path::Path;
 use std::fs::File;
 use std::io::prelude::*; // reexports Read, Write, BufRead, Seek.
@@ -54,11 +53,16 @@ mod tests {
         let res = file_sum(filename);
 
         let ans = res.unwrap_err();
+        // call ans.description() implicitly.
+        assert_eq!(
+            format!("{}", ans),
+            "please use a vector with at least one element"
+        );
 
         assert_eq!(
             format!("{:?}", ans),
             "EmptyVec"
-        )
+        );
     }
 
     #[test]
@@ -75,9 +79,15 @@ mod tests {
         let filename = "data/fail.txt";
         let res = file_sum(filename);
 
+        let ans = res.unwrap_err();
+        assert_eq!(
+            format!("{}", ans),
+            "invalid digit found in string"
+        );
+
         // check parse error
         assert_eq!(
-            format!("{:?}", res.unwrap_err()),
+            format!("{:?}", ans),
             "Parse(ParseIntError { kind: InvalidDigit })"
         );
     }
@@ -87,9 +97,16 @@ mod tests {
         let filename = "dummy.txt";
         let res = file_sum(filename);
 
+        let ans = res.unwrap_err();
+
+        assert_eq!(
+            format!("{}", ans),
+            "No such file or directory (os error 2)"
+        );
+
         // check parse error
         assert_eq!(
-            format!("{:?}", res.unwrap_err()),
+            format!("{:?}", ans),
             r#"Io(Error { repr: Os { code: 2, message: "No such file or directory" } })"#
         );
     }
