@@ -63,7 +63,9 @@ fn convert_vec(file: &str) -> LibResult<Vec<String>> {
     let mut s = String::new();
     File::open(&path)?.read_to_string(&mut s)?;
 
-    Ok(s.lines().map(|s| s.to_string()).collect())
+    let v = s.lines().map(|t| t.to_string()).collect::<Vec<String>>();
+    v.first().ok_or(Error::EmptyVec)?;
+    Ok(v)
 }
 
 fn file_sum(file: &str) -> LibResult<i32> {
@@ -94,6 +96,25 @@ mod tests {
             format!("{:?}", res.unwrap_err()),
             r#"Io(Error { repr: Os { code: 2, message: "No such file or directory" } })"#
         );
+    }
+
+    #[test]
+    fn test_convert_emptyfile() {
+        let filename = "data/empty.txt";
+
+        let res = file_sum(filename);
+
+        let ans = res.unwrap_err();
+
+        assert_eq!(
+            ans.description(),
+            "empty vectors not allowed"
+        );
+
+        assert_eq!(
+            format!("{:?}", ans),
+            "EmptyVec"
+        )
     }
 
     #[test]
