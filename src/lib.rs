@@ -10,7 +10,7 @@ pub enum Error {
     Io(io::Error),
 }
 
-type LibResult<T> = Result<T, Error>;
+pub type LibResult<T> = Result<T, Error>;
 
 // self define ParseIntError or io:Error into Error
 impl From<io::Error> for Error {
@@ -68,7 +68,7 @@ fn convert_vec(file: &str) -> LibResult<Vec<String>> {
     Ok(v)
 }
 
-fn file_sum(file: &str) -> LibResult<i32> {
+pub fn file_sum(file: &str) -> LibResult<i32> {
     let v = convert_vec(file)?;
     let s = v.iter().map(|s| s.parse::<i32>()).sum::<Result<i32, _>>()?;
     Ok(s)
